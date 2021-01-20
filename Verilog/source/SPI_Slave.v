@@ -21,7 +21,7 @@
 //              More info: https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Mode_numbers
 ///////////////////////////////////////////////////////////////////////////////
 
-module SPI_Slave
+module SPISLAVE
   #(parameter SPI_MODE = 0)
   (
    // Control/Data Signals,
@@ -34,7 +34,7 @@ module SPI_Slave
 
    // SPI Interface
    input      i_SPI_Clk,
-   output reg o_SPI_MISO,
+   output     o_SPI_MISO,
    input      i_SPI_MOSI,
    input      i_SPI_CS_n
    );
@@ -100,7 +100,6 @@ module SPI_Slave
   end // always @ (posedge w_SPI_Clk or posedge i_SPI_CS_n)
 
 
-
   // Purpose: Cross from SPI Clock Domain to main FPGA clock domain
   // Assert o_RX_DV for 1 clock cycle when o_RX_Byte has valid data.
   always @(posedge i_Clk or negedge i_Rst_L)
@@ -132,10 +131,9 @@ module SPI_Slave
     end // else: !if(~i_Rst_L)
   end // always @ (posedge i_Bus_Clk)
 
-
   // Control preload signal.  Should be 1 when CS is high, but as soon as
   // first clock edge is seen it goes low.
-  always @(posedge w_SPI_CLK or posedge i_SPI_CS_n)
+  always @(posedge w_SPI_Clk or posedge i_SPI_CS_n)
   begin
     if (i_SPI_CS_n)
     begin
@@ -154,6 +152,7 @@ module SPI_Slave
   always @(posedge w_SPI_Clk or posedge i_SPI_CS_n)
   begin
     if (i_SPI_CS_n)
+	 begin
       r_TX_Bit_Count <= 3'b111;  // Send MSb first
       r_SPI_MISO_Bit <= r_TX_Byte[3'b111];  // Reset to MSb
     end
@@ -192,5 +191,7 @@ module SPI_Slave
 
   // Tri-statae MISO when CS is high.  Allows for multiple slaves to talk.
   assign o_SPI_MISO = i_SPI_CS_n ? 1'bZ : w_SPI_MISO_Mux;
+  
+  
 
 endmodule // SPI_Slave
