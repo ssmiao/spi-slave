@@ -21,7 +21,7 @@
 //              More info: https://en.wikipedia.org/wiki/Serial_Peripheral_Interface_Bus#Mode_numbers
 ///////////////////////////////////////////////////////////////////////////////
 
-module SPISLAVE
+module SPI_Slave
   #(parameter SPI_MODE = 0)
   (
    // Control/Data Signals,
